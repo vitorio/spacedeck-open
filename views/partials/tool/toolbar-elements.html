@@ -109,5 +109,10 @@
       <span class="icon-label"><%= __('present') %></span>
     </button>
 
+    <button class="btn btn-transparent btn-icon-labeled" v-show="logged_in" title="Collision detection" v-on:click="toggle_collision_detection()" v-bind:class="{open:collision_detection}">
+      <span class="icon icon-crossedSwords"></span>
+      <span class="icon-label"><%= __('collision_detection') %></span>
+    </button>
+
   </div>
 </div>

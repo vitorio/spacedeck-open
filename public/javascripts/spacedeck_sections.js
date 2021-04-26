@@ -174,7 +174,9 @@ var SpacedeckSections = {
     toolbar_artifacts_x: "-1000px",
     toolbar_artifacts_y: "-1000px",
     toolbar_artifacts_in: true,
-    toolbar_lock_in: false
+    toolbar_lock_in: false,
+
+    collision_detection: false
   },
 
   methods: {
@@ -749,6 +751,27 @@ var SpacedeckSections = {
         this.websocket_send(msg);
     },
 
+    collision_send: function() {
+      name = this.user.nickname || this.user.email;
+
+      var msg = {
+        collision_detection: this.collision_detection,
+        action: "collision",
+        name: name,
+        id: this.user._id
+      };
+
+      var packed = JSON.stringify(msg);
+      if (packed==this._old_collision_msg) return;
+      this._old_collision_msg = packed;
+
+      if (this.logged_in) {
+        if (this.active_space_role!="viewer") {
+          this.websocket_send(msg);
+        }
+      }
+    },
+
     resize_minimap: function() {
       if (!this.active_space) return;
       this.minimap_scale = this.active_space.width/100.0;
@@ -836,6 +859,10 @@ var SpacedeckSections = {
       } else {
         console.log("ignore media update, muted");
       }
+    },
+
+    handle_collision_detection_update: function(msg) {
+      this.collision_detection = msg.collision_detection;
     },
 
     may_select: function(a) {

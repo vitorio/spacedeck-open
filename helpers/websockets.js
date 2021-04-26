@@ -18,7 +18,7 @@ const redisMock = require("./redis.js");
 module.exports = {
   startWebsockets: function(server) {
     this.setupSubscription();
-    
+
     if (!this.current_websockets) {
       if (config.get("redis_mock")) {
         this.state = redisMock.getConnection();
@@ -103,7 +103,7 @@ module.exports = {
               }
             });
 
-          } else if (msg.action == "cursor" || msg.action == "viewport" || msg.action=="media") {
+          } else if (msg.action == "cursor" || msg.action == "viewport" || msg.action=="media" || msg.action == "collision") {
             msg.space_id = socket.space_id;
             msg.from_socket_id = socket.id;
             serverScope.state.publish('cursors', JSON.stringify(msg));
@@ -137,7 +137,7 @@ module.exports = {
         console.log("[redis] websockets subscribed to " + count + " topics." );
       });
     }
-    
+
     this.cursorSubscriber.on('message', function (channel, rawMessage) {
       const msg = JSON.parse(rawMessage);
       const spaceId = msg.space_id;
@@ -213,7 +213,7 @@ module.exports = {
     ws.added = true;
     this.current_websockets.push(ws);
   },
-  
+
   removeLocalUser: function(ws, cb) {
     const idx = this.current_websockets.indexOf(ws);
     if(idx > -1) {
@@ -235,10 +235,10 @@ module.exports = {
       }
     }.bind(this));
   },
-  
+
   addUserInSpace: function(username, space, ws, cb) {
     console.log("[websockets] user "+username+" in "+space.access_mode +" space " +  space._id + " with socket "  +  ws.id);
-    
+
     this.state.set(ws.id+"", username+"", function(err, res) {
       if(err) console.error(err, res);
       else {

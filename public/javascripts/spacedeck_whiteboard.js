@@ -862,6 +862,35 @@ function setup_whiteboard_directives() {
           var old_a = $scope.find_artifact_before_transaction(a);
 
           if (old_a) {
+            if (window.spacedeck._data.collision_detection) {
+              var future_a = {
+                _id: old_a['_id'],
+                x: old_a['x'] + dx - snap_dx,
+                y: old_a['y'] + dy - snap_dy,
+                w: old_a['w'],
+                h: old_a['h']
+              };
+
+              function rects_intersecting(r1,r2) {
+                if (!r1 || !r2) return false;
+
+                if ( (r1.x+r1.w < r2.x)
+                  || (r1.x > r2.x+r2.w)
+                  || (r1.y+r1.h < r2.y)
+                  || (r1.y > r2.y+r2.h) ) return false;
+                return true;
+              };
+
+              for (var i=0; i<$scope.active_space_artifacts.length; i++) {
+                var b = $scope.active_space_artifacts[i];
+                if (b['_id'] != future_a['_id']) {
+                  if (rects_intersecting(b, future_a)) {
+                    return {};
+                  };
+                };
+              };
+            };
+
             return {
               x: old_a.x + dx - snap_dx,
               y: old_a.y + dy - snap_dy

@@ -202,6 +202,9 @@ SpacedeckWebsockets = {
         else if (msg.action == "media") {
           this.handle_presenter_media_update(msg);
         }
+        else if (msg.action == "collision") {
+          this.handle_collision_detection_update(msg);
+        }
 
         if (msg.action == "update" || msg.action == "update-self" || msg.action == "create" || msg.action == "delete") {
           this.handle_live_updates(msg);
