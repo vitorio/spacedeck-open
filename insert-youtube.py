@@ -26,8 +26,9 @@ else:
     parser.error('Don\'t understand the YouTube URL')
 
 artifactid = str(uuid.uuid4())
+localstoragedir = os.path.join('.', 'storage', 'my_spacedeck_bucket', 's{}'.format(args.space_id), 'a{}'.format(artifactid))
 try:
-    os.mkdir(os.path.join('.', 'storage', 'my_spacedeck_bucket', 's{}'.format(args.space_id), 'a{}'.format(artifactid)))
+    os.mkdir(localstoragedir)
 except FileExistsError:
     pass
 
@@ -43,11 +44,11 @@ if r.status_code != requests.codes.ok:
 
 thumbnailfile = urllib.parse.urlparse(r.url, allow_fragments=True).path.split('/')[-1]
 
-with open(os.path.join('.', 'storage', 'my_spacedeck_bucket', 's{}'.format(args.space_id), 'a{}'.format(artifactid), thumbnailfile), 'wb') as fd:
+with open(os.path.join(localstoragedir, thumbnailfile), 'wb') as fd:
     for chunk in r.iter_content(chunk_size=128):
         fd.write(chunk)
 
-im = PIL.Image.open(os.path.join('.', 'storage', 'my_spacedeck_bucket', 's{}'.format(args.space_id), 'a{}'.format(artifactid), thumbnailfile))
+im = PIL.Image.open(os.path.join(localstoragedir, thumbnailfile))
 w, h = im.size
 
 big = None
@@ -78,15 +79,15 @@ if w > 320 or h > 320:
         small = im.resize((int(math.floor((float(w) / float(h)) * 320)), 320), resample=3, reducing_gap=2.0)
 
 if big:
-    big.save(os.path.join('.', 'storage', 'my_spacedeck_bucket', 's{}'.format(args.space_id), 'a{}'.format(artifactid), '1920_{}.jpg'.format(thumbnailfile)))
+    big.save(os.path.join(localstoragedir, '1920_{}.jpg'.format(thumbnailfile)))
     big.close()
 
 if medium:
-    medium.save(os.path.join('.', 'storage', 'my_spacedeck_bucket', 's{}'.format(args.space_id), 'a{}'.format(artifactid), '800_{}.jpg'.format(thumbnailfile)))
+    medium.save(os.path.join(localstoragedir, '800_{}.jpg'.format(thumbnailfile)))
     medium.close()
 
 if small:
-    small.save(os.path.join('.', 'storage', 'my_spacedeck_bucket', 's{}'.format(args.space_id), 'a{}'.format(artifactid), '320_{}.jpg'.format(thumbnailfile)))
+    small.save(os.path.join(localstoragedir, '320_{}.jpg'.format(thumbnailfile)))
     small.close()
 
 im.close()
@@ -94,23 +95,24 @@ im.close()
 con = sqlite3.connect('database.sqlite')
 cur = con.cursor()
 
+dbstoragedir = os.path.join('/storage', 's{}'.format(args.space_id), 'a{}'.format(artifactid))
 webthumb = None
 if small:
-    webthumb = os.path.join('/storage', 's{}'.format(args.space_id), 'a{}'.format(artifactid), '320_{}.jpg'.format(thumbnailfile))
+    webthumb = os.path.join(dbstoragedir, '320_{}.jpg'.format(thumbnailfile))
 else:
-    webthumb = os.path.join('/storage', 's{}'.format(args.space_id), 'a{}'.format(artifactid), thumbnailfile)
+    webthumb = os.path.join(dbstoragedir, thumbnailfile)
 
 medthumb = None
 if medium:
-    medthumb = os.path.join('/storage', 's{}'.format(args.space_id), 'a{}'.format(artifactid), '800_{}.jpg'.format(thumbnailfile))
+    medthumb = os.path.join(dbstoragedir, '800_{}.jpg'.format(thumbnailfile))
 else:
-    medthumb = os.path.join('/storage', 's{}'.format(args.space_id), 'a{}'.format(artifactid), thumbnailfile)
+    medthumb = os.path.join(dbstoragedir, thumbnailfile)
 
 bigthumb = None
 if big:
-    bigthumb = os.path.join('/storage', 's{}'.format(args.space_id), 'a{}'.format(artifactid), '1920_{}.jpg'.format(thumbnailfile))
+    bigthumb = os.path.join(dbstoragedir, '1920_{}.jpg'.format(thumbnailfile))
 else:
-    bigthumb = os.path.join('/storage', 's{}'.format(args.space_id), 'a{}'.format(artifactid), thumbnailfile)
+    bigthumb = os.path.join(dbstoragedir, thumbnailfile)
 
 cur.execute("INSERT INTO artifacts(_id, space_id, mime, link_uri, x, y, w, h, payload_thumbnail_web_uri, payload_thumbnail_medium_uri, payload_thumbnail_big_uri, created_at, updated_at, createdAt, updatedAt) VALUES (:id, :space_id, :mime, :link_uri, :x, :y, :w, :h, :payload_thumbnail_web_uri, :payload_thumbnail_medium_uri, :payload_thumbnail_big_uri, :ct, :ut, :ct, :ut)", \
     {"id": artifactid, \
