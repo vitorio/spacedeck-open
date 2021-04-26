@@ -105,7 +105,7 @@ var SpacedeckBoardArtifacts = {
 
     if (a.align) clzs.push("align-"+a.align);
     if (a.valign) clzs.push("align-"+a.valign);
-    
+
     clzs.push("state-"+a.state);
 
     if (this.artifact_is_text_blank(a)) {
@@ -115,7 +115,7 @@ var SpacedeckBoardArtifacts = {
     if (a.locked) {
       clzs.push("locked");
     }
-    
+
     return clzs.join(" ");
   },
 
@@ -193,7 +193,7 @@ var SpacedeckBoardArtifacts = {
 
     z = a.z;
     if (z<0) z=0; // fix negative z-index
-    
+
     styles = [
       "left:"  +a.x+"px",
       "top:"   +a.y+"px",
@@ -206,7 +206,7 @@ var SpacedeckBoardArtifacts = {
     if (a.margin_right)  styles.push("margin-right:"+a.margin_right+"px");
     if (a.margin_top)    styles.push("margin-top:"+a.margin_top+"px");
     if (a.margin_bottom) styles.push("margin-bottom:"+a.margin_bottom+"px");
-    
+
     // FIXME: via class logic?
     if (a.mime.match("vector")) {
       styles.push("overflow:visible");
@@ -281,6 +281,10 @@ var SpacedeckBoardArtifacts = {
     } else if (provider=="spacedeck") {
 
       return ""; //<iframe frameborder=0 allowfullscreen src=\""+ a.meta.link_uri+"\"></iframe>
+
+    } else if (provider=="hackwebsite") {
+
+      return "<iframe frameborder=0 allowfullscreen src=\""+ a.link_uri+"\"></iframe>";
 
     } else {
       return "Don't know how to embed "+a.mime+".";
@@ -366,7 +370,7 @@ var SpacedeckBoardArtifacts = {
     } else {
       max_z = 1;
     }
-    
+
     this.update_selected_artifacts(function(a) {
       return { z: max_z };
     });
@@ -594,7 +598,7 @@ var SpacedeckBoardArtifacts = {
     var miny = sorted[0].y;
 
     var sorted = _.sortBy(selected, function(a) { return -Math.max(a.w,a.h) }.bind(this));
-    
+
     var blocks = [];
 
     var padding = 10;
@@ -607,7 +611,7 @@ var SpacedeckBoardArtifacts = {
         a: a
       });
     }
-    
+
     var packer = new GrowingPacker();
     packer.fit(blocks);
 
@@ -624,7 +628,7 @@ var SpacedeckBoardArtifacts = {
       }
     }
   },
-  
+
   show_artifact_comments: function(evt) {
     evt.preventDefault();
     evt.stopPropagation();
