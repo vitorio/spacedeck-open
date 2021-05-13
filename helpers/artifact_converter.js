@@ -1,7 +1,11 @@
 'use strict';
 
 const exec = require('child_process');
-const gm = require('gm');
+if (process.env.GM_IM) {
+  const gm = require('gm').subClass({imageMagick: true});
+} else {
+  const gm = require('gm');
+};
 const async = require('async');
 const fs = require('fs');
 const Models = require('../models/db');
