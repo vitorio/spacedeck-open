@@ -27,7 +27,7 @@ const config = {
 
   "export_api_secret": process.env.EXPORT_API_SECRET,
 
-  "mail_provider": "smtp",
+  "mail_provider": "console",
   "mail_smtp_host": "your.smtp.host",
   "mail_smtp_port": 465,
   "mail_smtp_secure": true,
@@ -57,7 +57,7 @@ const config = {
     ]
   },
   
-  "db_logs_disabled": true,
+  "db_logs_disabled": true
 };
 
 module.exports = config;
