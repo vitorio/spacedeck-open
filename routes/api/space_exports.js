@@ -17,7 +17,11 @@ var url = require("url");
 var path = require("path");
 var crypto = require('crypto');
 var glob = require('glob');
-var gm = require('gm');
+if (process.env.GM_IM) {
+  var gm = require('gm').subClass({imageMagick: true});
+} else {
+  var gm = require('gm');
+};
 var sanitizeHtml = require('sanitize-html');
 
 var express = require('express');

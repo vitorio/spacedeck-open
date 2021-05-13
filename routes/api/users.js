@@ -15,7 +15,11 @@ var async = require('async');
 var _ = require('underscore');
 var fs = require('fs');
 var request = require('request');
-var gm = require('gm');
+if (process.env.GM_IM) {
+  var gm = require('gm').subClass({imageMagick: true});
+} else {
+  var gm = require('gm');
+};
 var validator = require('validator');
 var URL = require('url').URL;
 
