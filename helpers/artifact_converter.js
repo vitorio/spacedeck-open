@@ -1,11 +1,7 @@
 'use strict';
 
 const exec = require('child_process');
-if (process.env.GM_IM) {
-  const gm = require('gm').subClass({imageMagick: true});
-} else {
-  const gm = require('gm');
-};
+const gm = process.env.GM_IM ? require('gm').subClass({imageMagick: true}) : require('gm');
 const async = require('async');
 const fs = require('fs');
 const Models = require('../models/db');
@@ -74,14 +70,14 @@ function getConversionProgress(content){
     duration = parseFloat(ar[0]);
     if (ar[1]) duration += parseInt(ar[1]) * 60;
     if (ar[2]) duration += parseInt(ar[2]) * 60 * 60;
-  } 
-  // get the time 
+  }
+  // get the time
   matches = content.match(/time=(.*?) bitrate/g);
   if( matches && matches.length>0 ){
     var rawTime = matches.pop();
     // needed if there is more than one match
-    if (Array.isArray(rawTime)){ 
-        rawTime = rawTime.pop().replace('time=','').replace(' bitrate',''); 
+    if (Array.isArray(rawTime)){
+        rawTime = rawTime.pop().replace('time=','').replace(' bitrate','');
     } else {
         rawTime = rawTime.replace('time=','').replace(' bitrate','');
     }

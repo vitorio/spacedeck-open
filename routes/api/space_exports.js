@@ -17,11 +17,7 @@ var url = require("url");
 var path = require("path");
 var crypto = require('crypto');
 var glob = require('glob');
-if (process.env.GM_IM) {
-  var gm = require('gm').subClass({imageMagick: true});
-} else {
-  var gm = require('gm');
-};
+var gm = process.env.GM_IM ? require('gm').subClass({imageMagick: true}) : require('gm');
 var sanitizeHtml = require('sanitize-html');
 
 var express = require('express');
@@ -54,11 +50,11 @@ router.get('/png', function(req, res, next) {
 
   if (!req.space.thumbnail_updated_at || req.space.thumbnail_updated_at < req.space.updated_at || !req.space.thumbnail_url) {
     db.Space.update({ thumbnail_updated_at: triggered }, {where : {"_id": req.space._id }});
-    
+
     exporter.takeScreenshot(req.space, "png", function(local_path) {
       var localResizedFilePath = local_path + ".thumb.jpg";
       gm(local_path).resize(640, 480).quality(70.0).autoOrient().write(localResizedFilePath, function(err) {
-        
+
         if (err) {
           console.error("[space screenshot] resize error: ", err);
           res.status(500).send("Error taking screenshot.");
@@ -257,4 +253,3 @@ router.get('/html', function(req, res) {
 });
 
 module.exports = router;
-

@@ -11,11 +11,7 @@ var url = require("url");
 var path = require("path");
 var crypto = require('crypto');
 var glob = require('glob');
-if (process.env.GM_IM) {
-  var gm = require('gm').subClass({imageMagick: true});
-} else {
-  var gm = require('gm');
-};
+var gm = process.env.GM_IM ? require('gm').subClass({imageMagick: true}) : require('gm');
 
 var express = require('express');
 var router = express.Router({mergeParams: true});
@@ -47,14 +43,14 @@ router.get('/', function(req, res, next) {
   return;
 
   // FIXME TODO
-  
+
   var showActionForSpaces = function(err, spaceIds) {
     var userMapping = {
       '_id': 1,
       'nickname': 1,
       'email': 1
     };
-    
+
     var spaceMapping = {
       '_id': 1,
       'name': 1
@@ -116,7 +112,7 @@ router.get('/', function(req, res, next) {
   if (!req.user) {
     res.status(403).json({
       error: "auth required"
-    }); 
+    });
   } else {
     if (!req.space._id.equals(req.user.home_folder_id)) {
       Space.getRecursiveSubspacesForSpace(req.space, function(err, spaces) {
